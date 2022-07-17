@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { RecoilRoot } from "recoil";
 import { ThemeProvider } from "styled-components";
 import App from "./App";
@@ -7,7 +7,6 @@ import { createGlobalStyle } from "styled-components";
 import { theme } from "./theme";
 
 const GlobalStyle = createGlobalStyle`
-@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400&display=swap');
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -28,8 +27,20 @@ time, mark, audio, video {
   font: inherit;
   vertical-align: baseline;
 }
+a{
+  text-decoration:none;
+  color: inherit;
+}
+ul{
+  list-style: none
+};
 `;
-ReactDOM.render(
+
+const rootElement = document.getElementById("root");
+if (!rootElement) throw new Error("Failed to find the root element");
+const root = createRoot(rootElement); // createRoot(container!) if you use TypeScript
+
+root.render(
   <React.StrictMode>
     <RecoilRoot>
       <ThemeProvider theme={theme}>
@@ -37,6 +48,5 @@ ReactDOM.render(
         <App />
       </ThemeProvider>
     </RecoilRoot>
-  </React.StrictMode>,
-  document.getElementById("root")
+  </React.StrictMode>
 );
