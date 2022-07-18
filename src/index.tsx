@@ -2,9 +2,17 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { RecoilRoot } from "recoil";
 import { ThemeProvider } from "styled-components";
-import App from "./App";
 import { createGlobalStyle } from "styled-components";
+import { QueryClient, QueryClientProvider } from "react-query";
+
 import { theme } from "./theme";
+import App from "./App";
+
+const rootElement = document.getElementById("root");
+if (!rootElement) throw new Error("Failed to find the root element");
+const root = createRoot(rootElement); // createRoot(container!) if you use TypeScript
+
+const queryClient = new QueryClient();
 
 const GlobalStyle = createGlobalStyle`
 html, body, div, span, applet, object, iframe,
@@ -27,26 +35,59 @@ time, mark, audio, video {
   font: inherit;
   vertical-align: baseline;
 }
-a{
-  text-decoration:none;
-  color: inherit;
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, main, menu, nav, section {
+  display: block;
 }
-ul{
-  list-style: none
-};
+/* HTML5 hidden-attribute fix for newer browsers */
+*[hidden] {
+    display: none;
+}
+body {
+  line-height: 1;
+}
+menu, ol, ul {
+  list-style: none;
+}
+blockquote, q {
+  quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: '';
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  font-weight: 300;
+  font-family: 'Source Sans Pro', sans-serif;
+  color:${(props) => props.theme.white.lighter};
+  line-height: 1.2;
+  background-color:black;
+  
+}
+a {
+  text-decoration:none;
+  color:inherit;
+}
 `;
-
-const rootElement = document.getElementById("root");
-if (!rootElement) throw new Error("Failed to find the root element");
-const root = createRoot(rootElement); // createRoot(container!) if you use TypeScript
 
 root.render(
   <React.StrictMode>
     <RecoilRoot>
-      <ThemeProvider theme={theme}>
-        <GlobalStyle />
-        <App />
-      </ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider theme={theme}>
+          <GlobalStyle />
+          <App />
+        </ThemeProvider>
+      </QueryClientProvider>
     </RecoilRoot>
   </React.StrictMode>
 );
