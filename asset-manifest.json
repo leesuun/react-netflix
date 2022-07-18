@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.js": "/leesuun/react-netflix/static/js/main.bda095bd.js",
-    "index.html": "/leesuun/react-netflix/index.html",
-    "main.bda095bd.js.map": "/leesuun/react-netflix/static/js/main.bda095bd.js.map"
+    "main.js": "/react-netflix/static/js/main.b36a5fdb.js",
+    "index.html": "/react-netflix/index.html",
+    "main.b36a5fdb.js.map": "/react-netflix/static/js/main.b36a5fdb.js.map"
   },
   "entrypoints": [
-    "static/js/main.bda095bd.js"
+    "static/js/main.b36a5fdb.js"
   ]
 }
