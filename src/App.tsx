@@ -9,7 +9,10 @@ function App() {
     <Router>
       <Header />
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home />}>
+          {/* nested Router */}
+          <Route path="movies/:movieId" element={<Home />} />
+        </Route>
         <Route path="/tv" element={<Tv />} />
         <Route path="/search" element={<Search />} />
       </Routes>

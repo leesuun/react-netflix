@@ -1,6 +1,12 @@
-import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
+import {
+  AnimatePresence,
+  motion,
+  useTransform,
+  useScroll,
+} from "framer-motion";
+import { memo, useState } from "react";
 import { useQuery } from "react-query";
+import { useMatch, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { getMovies, IGetMoviesResult } from "../api";
 import { makeImagePath } from "../utils";
@@ -56,6 +62,48 @@ const Box = styled(motion.div)<{ bgphoto: string }>`
   background-position: center center;
   background-size: cover;
   font-size: 66px;
+  /* position: relative; */
+  cursor: pointer;
+  &:first-child {
+    transform-origin: center left;
+  }
+  &:last-child {
+    transform-origin: center right;
+  }
+`;
+
+const Info = styled(motion.div)`
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 10px;
+  opacity: 0;
+  background-color: ${(props) => props.theme.black.darker};
+  h4 {
+    font-size: 15px;
+    text-align: center;
+  }
+`;
+
+const OverLay = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+`;
+
+const BigMovieBox = styled(motion.div)`
+  position: absolute;
+  width: 40vw;
+  height: 80vh;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  border-radius: 15px;
+  overflow: hidden;
+  background-color: ${(props) => props.theme.black.lighter};
 `;
 
 const rowVariants = {
@@ -70,16 +118,47 @@ const rowVariants = {
   },
 };
 
+const boxVariants = {
+  normal: { scale: 1 },
+  hover: {
+    scale: 1.3,
+    y: -50,
+    transition: {
+      delay: 0.3,
+      duration: 0.3,
+    },
+  },
+};
+
+const infoVariants = {
+  hover: {
+    opacity: 1,
+    transition: {
+      delay: 0.5,
+      duaration: 0.1,
+      type: "tween",
+    },
+  },
+};
+
 const offset = 6;
 
 function Home() {
+  const navigate = useNavigate();
+  const movieMatch = useMatch("/movies/:movieId");
   const { data, isLoading } = useQuery<IGetMoviesResult>(
     ["movie", "nowPlaying"],
     getMovies
   );
-
   const [index, setIndex] = useState(1);
   const [leaving, setLeaving] = useState(false);
+  const { scrollY } = useScroll();
+  const setScrollY = useTransform(scrollY, (value) => value + 50);
+
+  const onOverlayClick = () => navigate("/");
+  const onBoxClicked = (movieId: number) => {
+    navigate(`/movies/${movieId}`);
+  };
 
   const toggleLeaving = () => setLeaving((prev) => !prev);
 
@@ -121,16 +200,41 @@ function Home() {
                   .slice(offset * index, offset * index + offset)
                   .map((movie) => (
                     <Box
+                      layoutId={movie.id + ""}
+                      onClick={() => onBoxClicked(movie.id)}
+                      variants={boxVariants}
+                      initial="normal"
+                      whileHover="hover"
+                      transition={{ type: "tween" }}
                       key={movie.id}
                       bgphoto={makeImagePath(movie.backdrop_path, "w500")}
-                    />
+                    >
+                      <Info variants={infoVariants}>
+                        <h4>{movie.title}</h4>
+                      </Info>
+                    </Box>
                   ))}
-                {/* {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <Box key={i}>{i}</Box>
-                ))} */}
               </Row>
             </AnimatePresence>
           </Slider>
+          <AnimatePresence>
+            {movieMatch ? (
+              <>
+                <OverLay
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={onOverlayClick}
+                />
+                <BigMovieBox
+                  layoutId={movieMatch.params.movieId}
+                  style={{
+                    top: setScrollY,
+                  }}
+                ></BigMovieBox>
+              </>
+            ) : null}
+          </AnimatePresence>
         </>
       )}
     </Wrapper>

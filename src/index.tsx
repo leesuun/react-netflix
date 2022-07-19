@@ -71,6 +71,7 @@ body {
   color:${(props) => props.theme.white.lighter};
   line-height: 1.2;
   background-color:black;
+  height: 130vh;
   
 }
 a {
