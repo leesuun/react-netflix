@@ -72,8 +72,14 @@ body {
   line-height: 1.2;
   background-color:black;
   height: 130vh;
-  
+
+  &::-webkit-scrollbar{
+    display:none
+  }
 }
+
+
+
 a {
   text-decoration:none;
   color:inherit;
