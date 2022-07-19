@@ -49,6 +49,7 @@ const Slider = styled.div`
 const Row = styled(motion.div)`
   display: grid;
   gap: 5px;
+
   grid-template-columns: repeat(6, 1fr);
   position: absolute;
   width: 100%;
@@ -63,6 +64,7 @@ const Box = styled(motion.div)<{ bgphoto: string }>`
   background-size: cover;
   font-size: 66px;
   /* position: relative; */
+
   cursor: pointer;
   &:first-child {
     transform-origin: center left;
