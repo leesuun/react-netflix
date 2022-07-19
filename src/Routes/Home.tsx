@@ -1,4 +1,9 @@
 import {
+  faCircleArrowLeft,
+  faCircleArrowRight,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
   AnimatePresence,
   motion,
   useTransform,
@@ -10,18 +15,15 @@ import { useMatch, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { getMovies, IGetMoviesResult } from "../api";
 import { makeImagePath } from "../utils";
-
 const Wrapper = styled.div`
   background: black;
 `;
-
 const Loader = styled.div`
   height: 20vh;
   display: flex;
   justify-content: center;
   align-items: center;
 `;
-
 const Banner = styled.div<{ bgphoto: string }>`
   height: 100vh;
   display: flex;
@@ -32,32 +34,30 @@ const Banner = styled.div<{ bgphoto: string }>`
     url(${(props) => props.bgphoto});
   background-size: cover;
 `;
-
 const Title = styled.h2`
   font-size: 68px;
   margin-bottom: 20px; ;
 `;
-
 const Overview = styled.p`
   font-size: 30px;
   width: 50%;
 `;
-
 const Slider = styled.div`
   position: relative;
   top: -100px;
 `;
-
 const Row = styled(motion.div)`
   display: grid;
   gap: 5px;
   grid-template-columns: repeat(6, 1fr);
   position: absolute;
   width: 100%;
+  /* border: 3px solid red; */
+  /* padding: 0 30px; */
 `;
 
 const Box = styled(motion.div)<{ bgphoto: string }>`
-  height: 200px;
+  height: 150px;
   background-image: url(${(props) => props.bgphoto});
   background-position: center center;
   background-size: cover;
@@ -72,10 +72,28 @@ const Box = styled(motion.div)<{ bgphoto: string }>`
   }
 `;
 
+const SliderBtn = styled(motion.button)`
+  position: absolute;
+  font-size: 30px;
+  top: 55px;
+  border: none;
+  background-color: inherit;
+  text-align: center;
+  color: white;
+  z-index: 1;
+`;
+
+const LeftMove = styled(SliderBtn)`
+  left: 3px;
+`;
+const RightMove = styled(SliderBtn)`
+  right: 3px;
+`;
+
 const Info = styled(motion.div)`
   position: absolute;
   bottom: 0;
-  width: 100%;
+  width: inherit;
   padding: 10px;
   opacity: 0;
   background-color: ${(props) => props.theme.black.darker};
@@ -84,7 +102,6 @@ const Info = styled(motion.div)`
     text-align: center;
   }
 `;
-
 const OverLay = styled(motion.div)`
   position: fixed;
   top: 0;
@@ -93,7 +110,6 @@ const OverLay = styled(motion.div)`
   background-color: rgba(0, 0, 0, 0.5);
   opacity: 0;
 `;
-
 const BigMovieBox = styled(motion.div)`
   position: absolute;
   width: 40vw;
@@ -107,15 +123,15 @@ const BigMovieBox = styled(motion.div)`
 `;
 
 const rowVariants = {
-  hidden: {
-    x: window.innerWidth - 5,
-  },
+  hidden: (direction: string) => ({
+    x: direction === "right" ? window.innerWidth - 5 : -window.innerWidth + 5,
+  }),
   visible: {
     x: 0,
   },
-  exit: {
-    x: -window.innerWidth + 5,
-  },
+  exit: (direction: string) => ({
+    x: direction === "left" ? window.innerWidth - 5 : -window.innerWidth + 5,
+  }),
 };
 
 const boxVariants = {
@@ -129,7 +145,6 @@ const boxVariants = {
     },
   },
 };
-
 const infoVariants = {
   hover: {
     opacity: 1,
@@ -140,9 +155,7 @@ const infoVariants = {
     },
   },
 };
-
 const offset = 6;
-
 function Home() {
   const navigate = useNavigate();
   const movieMatch = useMatch("/movies/:movieId");
@@ -154,7 +167,6 @@ function Home() {
   const [leaving, setLeaving] = useState(false);
   const { scrollY } = useScroll();
   const setScrollY = useTransform(scrollY, (value) => value + 50);
-
   const onOverlayClick = () => navigate("/");
   const onBoxClicked = (movieId: number) => {
     navigate(`/movies/${movieId}`);
@@ -162,13 +174,24 @@ function Home() {
 
   const toggleLeaving = () => setLeaving((prev) => !prev);
 
-  const increseIndex = () => {
+  const [direction, setDirection] = useState(String);
+
+  const changeIndex = (direction: string) => {
+    setDirection(direction);
     if (data) {
       if (leaving) return;
-      toggleLeaving();
       const totalMovies = data.results.length - 1;
       const maxIndex = Math.floor(totalMovies / offset) - 1;
-      setIndex((prev) => (prev === maxIndex ? 0 : prev + 1));
+      toggleLeaving();
+      if (direction === "right") {
+        setIndex((prev) => (prev === maxIndex ? 0 : prev + 1));
+        return;
+      }
+
+      if (direction === "left") {
+        setIndex((prev) => (prev === 0 ? maxIndex : prev - 1));
+        return;
+      }
     }
   };
 
@@ -178,16 +201,32 @@ function Home() {
         <Loader>Loading...</Loader>
       ) : (
         <>
-          <Banner
-            onClick={increseIndex}
-            bgphoto={makeImagePath(data?.results[0].backdrop_path || "")}
-          >
+          <Banner bgphoto={makeImagePath(data?.results[0].backdrop_path || "")}>
             <Title>{data?.results[0].title}</Title>
             <Overview>{data?.results[0].overview}</Overview>
           </Banner>
           <Slider>
-            <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
+            <AnimatePresence
+              custom={direction}
+              initial={false}
+              onExitComplete={toggleLeaving}
+            >
+              <LeftMove
+                whileHover={{ scale: 1.2 }}
+                key="left"
+                onClick={() => changeIndex("left")}
+              >
+                <FontAwesomeIcon icon={faCircleArrowLeft} />
+              </LeftMove>
+              <RightMove
+                whileHover={{ scale: 1.2 }}
+                key="right"
+                onClick={() => changeIndex("right")}
+              >
+                <FontAwesomeIcon icon={faCircleArrowRight} />
+              </RightMove>
               <Row
+                custom={direction}
                 variants={rowVariants}
                 initial="hidden"
                 animate="visible"

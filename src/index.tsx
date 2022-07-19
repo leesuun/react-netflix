@@ -71,9 +71,15 @@ body {
   color:${(props) => props.theme.white.lighter};
   line-height: 1.2;
   background-color:black;
-  height: 130vh;
-  
+  height: 150vh;
+
+  &::-webkit-scrollbar{
+    display:none
+  }
 }
+
+
+
 a {
   text-decoration:none;
   color:inherit;
