@@ -6,63 +6,27 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AnimatePresence } from "framer-motion";
 import { memo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { boxVariants, infoVariants, rowVariants } from "../animations/variants";
 import { IGetMoviesResult } from "../api";
 import {
-  Box,
+  Movie,
   Info,
-  LeftMove,
-  RightMove,
-  Row,
+  SliderPage,
   SliderComponent,
+  LeftBtn,
+  RightBtn,
+  SliderTitle,
 } from "../styles/slider";
 import { makeImagePath } from "../utils";
 
 const offset = 6;
 
-const rowVariants = {
-  hidden: (direction: string) => ({
-    x: direction === "right" ? window.innerWidth - 5 : -window.innerWidth + 5,
-  }),
-  visible: {
-    x: 0,
-  },
-  exit: (direction: string) => ({
-    x: direction === "left" ? window.innerWidth - 5 : -window.innerWidth + 5,
-  }),
-};
-
-const boxVariants = {
-  normal: { scale: 1 },
-  hover: {
-    scale: 1.3,
-    y: -50,
-    transition: {
-      delay: 0.3,
-      duration: 0.3,
-    },
-  },
-};
-const infoVariants = {
-  hover: {
-    opacity: 1,
-    transition: {
-      delay: 0.5,
-      duaration: 0.1,
-      type: "tween",
-    },
-  },
-};
-
-interface IDivisionProps {
-  division: string;
-}
-
 function Slider({ results, type }: IGetMoviesResult) {
   const navigate = useNavigate();
   const [index, setIndex] = useState(1);
   const [leaving, setLeaving] = useState(false);
-  const onBoxClicked = (movieId: number) => {
-    navigate(`/movies/${movieId}`);
+  const onMovieClicked = (movieId: number) => {
+    navigate(`/movies/${type}/${movieId}`);
   };
 
   const toggleLeaving = () => setLeaving((prev) => !prev);
@@ -89,28 +53,28 @@ function Slider({ results, type }: IGetMoviesResult) {
   return (
     <>
       <SliderComponent>
-        <h4>인기 영화</h4>
+        <SliderTitle>{"- " + type + " -"}</SliderTitle>
         <AnimatePresence
           custom={direction}
           initial={false}
           onExitComplete={toggleLeaving}
         >
-          <LeftMove
+          <LeftBtn
             whileHover={{ scale: 1.2 }}
             key="left"
             onClick={() => changeIndex("left")}
           >
             <FontAwesomeIcon icon={faCircleArrowLeft} />
-          </LeftMove>
-          <RightMove
+          </LeftBtn>
+          <RightBtn
             whileHover={{ scale: 1.2 }}
             key="right"
             onClick={() => changeIndex("right")}
           >
             <FontAwesomeIcon icon={faCircleArrowRight} />
-          </RightMove>
+          </RightBtn>
 
-          <Row
+          <SliderPage
             custom={direction}
             variants={rowVariants}
             initial="hidden"
@@ -123,12 +87,12 @@ function Slider({ results, type }: IGetMoviesResult) {
               .slice(1)
               .slice(offset * index, offset * index + offset)
               .map((movie, idx) => (
-                <Box
+                <Movie
                   style={{
                     originX: idx === 0 ? 0 : idx === 5 ? 1 : undefined,
                   }}
                   layoutId={movie.id + type}
-                  onClick={() => onBoxClicked(movie.id)}
+                  onClick={() => onMovieClicked(movie.id)}
                   variants={boxVariants}
                   initial="normal"
                   whileHover="hover"
@@ -139,9 +103,9 @@ function Slider({ results, type }: IGetMoviesResult) {
                   <Info variants={infoVariants}>
                     <h4>{movie.title}</h4>
                   </Info>
-                </Box>
+                </Movie>
               ))}
-          </Row>
+          </SliderPage>
         </AnimatePresence>
       </SliderComponent>
     </>

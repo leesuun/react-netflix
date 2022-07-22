@@ -41,3 +41,9 @@ export function getPopularMovie() {
     (response) => response.json()
   );
 }
+
+export function getTopRatingMovie() {
+  return fetch(`${BASE_URL}/movie/top_rated?api_key=${API_KEY}`).then(
+    (response) => response.json()
+  );
+}

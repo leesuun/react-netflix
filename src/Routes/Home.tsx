@@ -8,9 +8,16 @@ import {
 import { useQuery } from "react-query";
 import { useMatch, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { getMovies, getPopularMovie, IGetMoviesResult } from "../api";
+import {
+  getMovies,
+  getPopularMovie,
+  getTopRatingMovie,
+  IGetMoviesResult,
+} from "../api";
 import { makeImagePath } from "../utils";
-import Slider from "../components/Slider";
+import Slider from "../components/MovieSlider";
+import MovieSlider from "../components/MovieSlider";
+import MovieDetail from "../components/MovieDetail";
 
 const Wrapper = styled.div`
   background: black;
@@ -51,6 +58,8 @@ const OverLay = styled(motion.div)`
 const BigMovieBox = styled(motion.div)`
   position: absolute;
   width: 40vw;
+  min-width: 480px;
+  max-width: 550px;
   height: 80vh;
   left: 0;
   right: 0;
@@ -60,18 +69,26 @@ const BigMovieBox = styled(motion.div)`
   background-color: ${(props) => props.theme.black.lighter};
 `;
 
+enum MovieTypes {
+  "NowPlay" = "NowPlay",
+  "TopRating" = "TopRating",
+  "Popular" = "Popular",
+}
+
 function Home() {
   const navigate = useNavigate();
-  const movieMatch = useMatch("/movies/:movieId");
+  const movieMatch = useMatch("/movies/:movieType/:movieId");
+  console.log(movieMatch);
   const { data: nowMovie, isLoading: nowLoading } = useQuery<IGetMoviesResult>(
     ["movie", "nowPlaying"],
     getMovies
   );
-
   const { data: popularMovie, isLoading: popularLoading } =
     useQuery<IGetMoviesResult>(["movie", "popular"], getPopularMovie);
+  const { data: topRatingMovie, isLoading: topRatingLoading } =
+    useQuery<IGetMoviesResult>(["movie", "topRating"], getTopRatingMovie);
 
-  const loading = nowLoading || popularLoading;
+  const loading = nowLoading || popularLoading || topRatingLoading;
 
   const { scrollY } = useScroll();
   const setScrollY = useTransform(scrollY, (value) => value + 50);
@@ -90,10 +107,18 @@ function Home() {
             <Overview>{nowMovie?.results[0].overview}</Overview>
           </Banner>
 
-          {/* <PopularSlider results={popularMovie?.results as any} />
-          <NowPlaySlider results={nowMovie?.results as any} /> */}
-          <Slider type="popular" results={popularMovie?.results as any} />
-          <Slider type="nowPlay" results={nowMovie?.results as any} />
+          <MovieSlider
+            type={MovieTypes.NowPlay}
+            results={nowMovie?.results as any}
+          />
+          <MovieSlider
+            type={MovieTypes.TopRating}
+            results={topRatingMovie?.results as any}
+          />
+          <MovieSlider
+            type={MovieTypes.Popular}
+            results={popularMovie?.results as any}
+          />
 
           <AnimatePresence>
             {movieMatch ? (
@@ -105,11 +130,16 @@ function Home() {
                   onClick={onOverlayClick}
                 />
                 <BigMovieBox
-                  layoutId={movieMatch.params.movieId}
+                  layoutId={
+                    (movieMatch.params.movieId || "") +
+                    (movieMatch.params.movieType || "")
+                  }
                   style={{
                     top: setScrollY,
                   }}
-                ></BigMovieBox>
+                >
+                  <MovieDetail />
+                </BigMovieBox>
               </>
             ) : null}
           </AnimatePresence>

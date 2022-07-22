@@ -6,38 +6,34 @@ export const SliderComponent = styled.div`
   top: -100px;
   margin-bottom: 200px;
 `;
-export const Row = styled(motion.div)`
+export const SliderPage = styled(motion.div)`
   display: grid;
   gap: 5px;
-
   grid-template-columns: repeat(6, 1fr);
   position: absolute;
   width: 100%;
-  /* border: 3px solid red; */
-  /* padding: 0 30px; */
 `;
 
-export const Box = styled(motion.div)<{ bgphoto: string }>`
+export const SliderTitle = styled.h3`
+  font-size: 18px;
+  margin-bottom: 7px;
+`;
+
+export const Movie = styled(motion.div)<{ bgphoto: string }>`
   height: 150px;
   background-image: url(${(props) => props.bgphoto});
   background-position: center center;
   background-size: cover;
   font-size: 66px;
-  /* position: relative; */
+  border-radius: 10px;
 
   cursor: pointer;
-  /* &:first-child {
-    transform-origin: center left;
-  }
-  &:last-child {
-    transform-origin: center right;
-  } */
 `;
 
 export const SliderBtn = styled(motion.button)`
   position: absolute;
   font-size: 30px;
-  top: 55px;
+  top: 85px;
   border: none;
   background-color: inherit;
   text-align: center;
@@ -46,19 +42,21 @@ export const SliderBtn = styled(motion.button)`
   cursor: pointer;
 `;
 
-export const LeftMove = styled(SliderBtn)`
+export const LeftBtn = styled(SliderBtn)`
   left: 3px;
 `;
-export const RightMove = styled(SliderBtn)`
+export const RightBtn = styled(SliderBtn)`
   right: 3px;
 `;
 
 export const Info = styled(motion.div)`
   position: absolute;
   bottom: 0;
-  width: inherit;
+  width: 100%;
   padding: 10px;
   opacity: 0;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
   background-color: ${(props) => props.theme.black.darker};
   h4 {
     font-size: 15px;
