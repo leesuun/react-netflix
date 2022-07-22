@@ -1,7 +1,7 @@
 const API_KEY = "9e885e4ff5433ef541fa62970547ea33";
 const BASE_URL = "https://api.themoviedb.org/3";
 
-interface Movies {
+export interface Movies {
   adult: boolean;
   backdrop_path: string;
   genre_ids: number[];
@@ -19,18 +19,25 @@ interface Movies {
 }
 
 export interface IGetMoviesResult {
-  dates: {
+  dates?: {
     maximum: string;
     minimum: string;
   };
-  page: number;
+  page?: number;
   results: Movies[];
-  total_pages: number;
-  total_results: number;
+  total_pages?: number;
+  total_results?: number;
+  type: string;
 }
 
 export function getMovies() {
   return fetch(`${BASE_URL}/movie/now_playing?api_key=${API_KEY}`).then(
+    (response) => response.json()
+  );
+}
+
+export function getPopularMovie() {
+  return fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}`).then(
     (response) => response.json()
   );
 }
