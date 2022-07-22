@@ -13,11 +13,15 @@ import {
   getPopularMovie,
   getTopRatingMovie,
   IGetMoviesResult,
+  Movies,
 } from "../api";
 import { makeImagePath } from "../utils";
 import Slider from "../components/MovieSlider";
 import MovieSlider from "../components/MovieSlider";
 import MovieDetail from "../components/MovieDetail";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { movieAtom } from "../atom";
+import { memo, useEffect } from "react";
 
 const Wrapper = styled.div`
   background: black;
@@ -78,7 +82,8 @@ enum MovieTypes {
 function Home() {
   const navigate = useNavigate();
   const movieMatch = useMatch("/movies/:movieType/:movieId");
-  console.log(movieMatch);
+  const [movies, setMovies] = useRecoilState(movieAtom);
+
   const { data: nowMovie, isLoading: nowLoading } = useQuery<IGetMoviesResult>(
     ["movie", "nowPlaying"],
     getMovies
@@ -89,6 +94,28 @@ function Home() {
     useQuery<IGetMoviesResult>(["movie", "topRating"], getTopRatingMovie);
 
   const loading = nowLoading || popularLoading || topRatingLoading;
+
+  // console.log(arr.filter((v) => v.id));
+
+  useEffect(() => {
+    setMovies(() => {
+      const allMovies = nowMovie?.results
+        .concat(popularMovie?.results || [])
+        .concat(topRatingMovie?.results || []);
+      const movieIds = Array.from(new Set(allMovies?.map((movie) => movie.id)));
+      const newMovies: Movies[] = [];
+
+      allMovies?.forEach((movie) => {
+        const overlapId = movieIds.findIndex((id) => id === movie.id);
+        if (movieIds.includes(movie.id)) {
+          newMovies.push(movie);
+          movieIds.splice(overlapId, 1);
+        }
+      });
+
+      return newMovies as any;
+    });
+  }, [nowLoading, popularLoading, topRatingLoading]);
 
   const { scrollY } = useScroll();
   const setScrollY = useTransform(scrollY, (value) => value + 50);
@@ -148,4 +175,4 @@ function Home() {
     </Wrapper>
   );
 }
-export default Home;
+export default memo(Home);
