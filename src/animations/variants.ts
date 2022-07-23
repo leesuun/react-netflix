@@ -1,3 +1,4 @@
+// home
 export const rowVariants = {
   hidden: (direction: string) => ({
     x: direction === "right" ? window.innerWidth - 5 : -window.innerWidth + 5,
@@ -31,3 +32,5 @@ export const infoVariants = {
     },
   },
 };
+
+// detail

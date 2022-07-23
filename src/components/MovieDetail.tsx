@@ -1,51 +1,85 @@
+import {
+  faCartArrowDown,
+  faPlay,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { memo } from "react";
-import { useMatch } from "react-router-dom";
-import { useRecoilValue } from "recoil";
-import { Movies } from "../api";
-import { movieAtom } from "../atom";
+import { useQuery } from "react-query";
+import { useNavigate } from "react-router-dom";
+import { getMovieDetail, Movies } from "../api";
+
 import {
   BasicInfo,
-  DetaleButton,
+  DetailButton,
   Wrapper,
   PlayBtn,
   FavoritBtn,
   MovieInfo,
   MovieOverview,
-  Casts,
-  Director,
+  Img,
+  Genres,
+  CancleBtn,
 } from "../styles/movieDetail";
-import { makeImagePath } from "../utils";
+import { formatOverView, makeImagePath } from "../utils";
 
-interface test {
-  movie: string;
+interface IMovieDetailProps {
+  movieId: string;
 }
 
-function MovieDetail() {
-  const data = useRecoilValue(movieAtom);
-  const movieMatch = useMatch("/movies/:movieType/:movieId");
-
-  const movie = data.filter(
-    (movie) => String(movie.id) === movieMatch?.params.movieId
+function MovieDetail({ movieId }: IMovieDetailProps) {
+  const { data: movie, isLoading } = useQuery<Movies>(["movie", "detail"], () =>
+    getMovieDetail(movieId)
   );
+  const navigate = useNavigate();
+  const onCancleBtnClick = () => navigate("/");
 
   return (
-    <Wrapper>
-      {movie.length !== 0 ? (
-        <>
-          <img src={makeImagePath(movie[0].backdrop_path, "w500")} alt="" />
-          <BasicInfo></BasicInfo>
-          <DetaleButton>
-            <PlayBtn></PlayBtn>
-            <FavoritBtn></FavoritBtn>
-          </DetaleButton>
-          <MovieInfo>
-            <MovieOverview></MovieOverview>
-            <Casts></Casts>
-            <Director></Director>
-          </MovieInfo>
-        </>
-      ) : null}
-    </Wrapper>
+    <>
+      {isLoading ? (
+        <span>loading</span>
+      ) : (
+        <Wrapper>
+          {movie ? (
+            <>
+              <CancleBtn onClick={onCancleBtnClick}>
+                <FontAwesomeIcon icon={faXmark} />
+              </CancleBtn>
+              <Img src={makeImagePath(movie?.poster_path)} alt="" />
+              <BasicInfo>
+                <span>{movie.release_date.slice(0, 4)}</span>
+                <span>{movie.runtime + "min"}</span>
+                <span>{movie.vote_average.toFixed(1) + "rate"}</span>
+              </BasicInfo>
+              <DetailButton>
+                <a target="_blank" href={movie.homepage}>
+                  <PlayBtn>
+                    <FontAwesomeIcon icon={faPlay} />
+                    <span>Play</span>
+                  </PlayBtn>
+                </a>
+
+                <FavoritBtn>
+                  <FontAwesomeIcon
+                    style={{ color: "white" }}
+                    icon={faCartArrowDown}
+                  />
+                  <span>Save</span>
+                </FavoritBtn>
+              </DetailButton>
+              <MovieInfo>
+                <MovieOverview>{formatOverView(movie.overview)}</MovieOverview>
+                <Genres>
+                  {movie.genres.map((genre) => (
+                    <li>{genre.name.toLowerCase()}</li>
+                  ))}
+                </Genres>
+              </MovieInfo>
+            </>
+          ) : null}
+        </Wrapper>
+      )}
+    </>
   );
 }
 
