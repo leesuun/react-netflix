@@ -25,6 +25,7 @@ function Slider({ results, type }: IGetMoviesResult) {
   const navigate = useNavigate();
   const [index, setIndex] = useState(1);
   const [leaving, setLeaving] = useState(false);
+
   const onMovieClicked = (movieId: number) => {
     navigate(`/movies/${type}/${movieId}`);
   };

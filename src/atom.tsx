@@ -5,3 +5,8 @@ import { atom } from "recoil";
 //   key: "movie",
 //   default: [],
 // });
+
+export const detailLoadingAtom = atom({
+  key: "detailLoading",
+  default: false,
+});

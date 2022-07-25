@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { memo } from "react";
 import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
-import { getMovieDetail, Movies } from "../api";
+import { getMovieDetail, IGetMoviesResult, Movies } from "../api";
 
 import {
   BasicInfo,
@@ -28,20 +28,20 @@ interface IMovieDetailProps {
 }
 
 function MovieDetail({ movieId }: IMovieDetailProps) {
+  const navigate = useNavigate();
+  const onCancleBtnClick = () => navigate("/");
   const { data: movie, isLoading } = useQuery<Movies>(["movie", "detail"], () =>
     getMovieDetail(movieId)
   );
-  const navigate = useNavigate();
-  const onCancleBtnClick = () => navigate("/");
 
   return (
     <>
       {isLoading ? (
-        <span>loading</span>
+        <span>loadng...</span>
       ) : (
-        <Wrapper>
+        <>
           {movie ? (
-            <>
+            <Wrapper>
               <CancleBtn onClick={onCancleBtnClick}>
                 <FontAwesomeIcon icon={faXmark} />
               </CancleBtn>
@@ -70,14 +70,14 @@ function MovieDetail({ movieId }: IMovieDetailProps) {
               <MovieInfo>
                 <MovieOverview>{formatOverView(movie.overview)}</MovieOverview>
                 <Genres>
-                  {movie.genres.map((genre) => (
-                    <li>{genre.name.toLowerCase()}</li>
+                  {movie.genres.slice(0, 4).map((genre) => (
+                    <li key={genre.id}>{genre.name.toLowerCase()}</li>
                   ))}
                 </Genres>
               </MovieInfo>
-            </>
+            </Wrapper>
           ) : null}
-        </Wrapper>
+        </>
       )}
     </>
   );
