@@ -25,6 +25,8 @@ export interface Movies {
   runtime: number;
   production_countries: countries[];
   homepage: string;
+  media_type: string;
+  name: string;
 }
 
 export interface IGetMoviesResult {
@@ -61,4 +63,10 @@ export function getMovieDetail(movieId: string) {
   return fetch(`${BASE_URL}/movie/${movieId}?api_key=${API_KEY}`).then(
     (response) => response.json()
   );
+}
+
+export function getMultiSearch(keyword: string | null, page: number) {
+  return fetch(
+    `${BASE_URL}/search/multi?api_key=${API_KEY}&query=${keyword}&page=${page}`
+  ).then((response) => response.json());
 }

@@ -5,7 +5,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AnimatePresence } from "framer-motion";
 import { memo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useMatch, useNavigate } from "react-router-dom";
 import { boxVariants, infoVariants, rowVariants } from "../animations/variants";
 import { IGetMoviesResult } from "../api";
 import {
@@ -25,8 +25,10 @@ function Slider({ results, type }: IGetMoviesResult) {
   const navigate = useNavigate();
   const [index, setIndex] = useState(1);
   const [leaving, setLeaving] = useState(false);
+  const searchMatch = useMatch(`/search`);
 
-  const onMovieClicked = (movieId: number) => {
+  const onMovieClicked = (movieId?: number) => {
+    if (!movieId) return;
     navigate(`/movies/${type}/${movieId}`);
   };
 
@@ -93,7 +95,11 @@ function Slider({ results, type }: IGetMoviesResult) {
                     originX: idx === 0 ? 0 : idx === 5 ? 1 : undefined,
                   }}
                   layoutId={movie.id + type}
-                  onClick={() => onMovieClicked(movie.id)}
+                  onClick={
+                    !searchMatch
+                      ? () => onMovieClicked(movie.id)
+                      : () => onMovieClicked()
+                  }
                   variants={boxVariants}
                   initial="normal"
                   whileHover="hover"
@@ -102,7 +108,7 @@ function Slider({ results, type }: IGetMoviesResult) {
                   bgphoto={makeImagePath(movie.backdrop_path, "w500")}
                 >
                   <Info variants={infoVariants}>
-                    <h4>{movie.title}</h4>
+                    <h4>{movie.title || movie.name}</h4>
                   </Info>
                 </Movie>
               ))}
