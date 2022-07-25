@@ -6,8 +6,8 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { memo } from "react";
 import { useQuery } from "react-query";
-import { useNavigate } from "react-router-dom";
-import { getMovieDetail, IGetMoviesResult, Movies } from "../api";
+import { useMatch, useNavigate } from "react-router-dom";
+import { getMovieDetail, getTvShow, IGetMoviesResult, Movies } from "../api";
 
 import {
   BasicInfo,
@@ -30,13 +30,15 @@ interface IMovieDetailProps {
 function MovieDetail({ movieId }: IMovieDetailProps) {
   const navigate = useNavigate();
   const onCancleBtnClick = () => navigate("/");
-  const { data: movie, isLoading } = useQuery<Movies>(["movie", "detail"], () =>
-    getMovieDetail(movieId)
+
+  const { data: movie, isLoading: movieLoading } = useQuery<Movies>(
+    ["movie", "detail"],
+    () => getMovieDetail(movieId)
   );
 
   return (
     <>
-      {isLoading ? (
+      {movieLoading ? (
         <span>loadng...</span>
       ) : (
         <>

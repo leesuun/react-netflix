@@ -25,10 +25,13 @@ function Slider({ results, type }: IGetMoviesResult) {
   const navigate = useNavigate();
   const [index, setIndex] = useState(1);
   const [leaving, setLeaving] = useState(false);
-  const searchMatch = useMatch(`/search`);
+  const tvMatch = useMatch(`/tv`);
 
   const onMovieClicked = (movieId?: number) => {
-    if (!movieId) return;
+    if (tvMatch) {
+      // navigate(`/tv/${movieId}`);
+      return;
+    }
     navigate(`/movies/${type}/${movieId}`);
   };
 
@@ -95,11 +98,7 @@ function Slider({ results, type }: IGetMoviesResult) {
                     originX: idx === 0 ? 0 : idx === 5 ? 1 : undefined,
                   }}
                   layoutId={movie.id + type}
-                  onClick={
-                    !searchMatch
-                      ? () => onMovieClicked(movie.id)
-                      : () => onMovieClicked()
-                  }
+                  onClick={() => onMovieClicked(movie.id)}
                   variants={boxVariants}
                   initial="normal"
                   whileHover="hover"
