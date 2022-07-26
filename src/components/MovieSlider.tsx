@@ -29,7 +29,6 @@ function Slider({ results, type }: IGetMoviesResult) {
 
   const onMovieClicked = (movieId?: number) => {
     if (tvMatch) {
-      // navigate(`/tv/${movieId}`);
       return;
     }
     navigate(`/movies/${type}/${movieId}`);

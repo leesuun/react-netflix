@@ -77,9 +77,6 @@ body {
     display:none
   }
 }
-
-
-
 a {
   text-decoration:none;
   color:inherit;

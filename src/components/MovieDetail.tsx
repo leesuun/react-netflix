@@ -6,8 +6,8 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { memo } from "react";
 import { useQuery } from "react-query";
-import { useMatch, useNavigate } from "react-router-dom";
-import { getMovieDetail, getTvShow, IGetMoviesResult, Movies } from "../api";
+import { useNavigate } from "react-router-dom";
+import { getMovieDetail, Movies } from "../api";
 
 import {
   BasicInfo,
