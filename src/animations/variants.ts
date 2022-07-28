@@ -35,8 +35,6 @@ export const infoVariants = {
 
 // detail
 
-// header
-
 export const logoVariants = {
   normal: { fillOpacity: 1 },
   active: {
