@@ -9,19 +9,15 @@ import { useQuery } from "react-query";
 import { useMatch, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import {
-  getMovieDetail,
   getNowPlayMovies,
   getPopularMovie,
   getTopRatingMovie,
   IGetMoviesResult,
-  Movies,
 } from "../api";
 import { makeImagePath } from "../utils";
 import MovieSlider from "../components/MovieSlider";
 import MovieDetail from "../components/MovieDetail";
-import { memo, useEffect, useState } from "react";
-import { useRecoilValue } from "recoil";
-import { detailLoadingAtom } from "../atom";
+import { memo } from "react";
 
 const Wrapper = styled.div`
   background: black;

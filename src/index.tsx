@@ -4,7 +4,6 @@ import { RecoilRoot } from "recoil";
 import { ThemeProvider } from "styled-components";
 import { createGlobalStyle } from "styled-components";
 import { QueryClient, QueryClientProvider } from "react-query";
-
 import { theme } from "./theme";
 import App from "./App";
 
@@ -88,10 +87,14 @@ a {
 
 root.render(
   <React.StrictMode>
+    {/* context-api(atom) */}
     <RecoilRoot>
+      {/* state management */}
       <QueryClientProvider client={queryClient}>
+        {/* set global style */}
         <ThemeProvider theme={theme}>
           <GlobalStyle />
+          {/* react-creat-app typescipt */}
           <App />
         </ThemeProvider>
       </QueryClientProvider>
