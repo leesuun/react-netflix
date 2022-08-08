@@ -10,7 +10,7 @@ interface countries {
   name: string;
 }
 
-export interface Movies {
+export interface ContentsData {
   adult: boolean;
   backdrop_path: string;
   genre_ids: number[];
@@ -29,13 +29,13 @@ export interface Movies {
   name: string;
 }
 
-export interface IGetMoviesResult {
+export interface IGetContents {
   dates?: {
     maximum: string;
     minimum: string;
   };
   page?: number;
-  results: Movies[];
+  results: ContentsData[];
   total_pages?: number;
   total_results?: number;
   type: string;
@@ -70,15 +70,3 @@ export function getMultiSearch(keyword: string | null, page: number) {
     `${BASE_URL}/search/multi?api_key=${API_KEY}&query=${keyword}&page=${page}`
   ).then((response) => response.json());
 }
-
-export function getTvShow() {
-  return fetch(`${BASE_URL}/tv/popular?api_key=${API_KEY}`).then((response) =>
-    response.json()
-  );
-}
-
-// export function getTvDetail(movieId: string) {
-//   return fetch(`${BASE_URL}/movie/${movieId}?api_key=${API_KEY}`).then(
-//     (response) => response.json()
-//   );
-// }

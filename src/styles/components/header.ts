@@ -63,6 +63,7 @@ export const Search = styled.form`
   display: flex;
   align-items: center;
   position: relative;
+
   svg {
     height: 18px;
     z-index: 1;
@@ -76,7 +77,7 @@ export const Input = styled(motion.input)`
   left: -180px;
   border: 0.5px solid gray;
   background-color: inherit;
-  height: 20px;
+  height: 25px;
   padding: 3px 5px 3px 30px;
   color: white;
 `;

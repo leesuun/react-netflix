@@ -1,15 +1,15 @@
 import { useEffect } from "react";
 import { useQueries, useQuery } from "react-query";
 import { useLocation } from "react-router-dom";
-import { getMultiSearch, IGetMoviesResult, Movies } from "../api";
-import MovieSlider from "../components/MovieSlider";
+import { getMultiSearch, IGetContents, ContentsData } from "../api";
+import MovieSlider from "../components/Slider";
 
 function Search() {
   const location = useLocation();
   const search = new URLSearchParams(location.search);
   const queryArr: Object[] = [];
-  const movieData: Movies[] = [];
-  const tvData: Movies[] = [];
+  const movieData: ContentsData[] = [];
+  const tvData: ContentsData[] = [];
 
   for (let i = 1; i <= 5; i++) {
     queryArr.push({
@@ -22,7 +22,7 @@ function Search() {
 
   results.map((result) => {
     if (result.data !== undefined) {
-      const data = { ...(result.data as IGetMoviesResult) };
+      const data = { ...(result.data as IGetContents) };
       const resultData = data.results;
 
       tvData.push(

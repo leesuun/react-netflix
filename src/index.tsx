@@ -88,13 +88,13 @@ a {
 
 root.render(
   <React.StrictMode>
-    <RecoilRoot>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <RecoilRoot>
         <ThemeProvider theme={theme}>
           <GlobalStyle />
           <App />
         </ThemeProvider>
-      </QueryClientProvider>
-    </RecoilRoot>
+      </RecoilRoot>
+    </QueryClientProvider>
   </React.StrictMode>
 );

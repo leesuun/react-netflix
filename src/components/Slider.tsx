@@ -7,32 +7,32 @@ import { AnimatePresence } from "framer-motion";
 import { memo, useState } from "react";
 import { useMatch, useNavigate } from "react-router-dom";
 import { boxVariants, infoVariants, rowVariants } from "../animations/variants";
-import { IGetMoviesResult } from "../api";
+import { IGetContents } from "../api";
 import {
-  Movie,
+  Cover,
   Info,
   SliderPage,
   SliderComponent,
   LeftBtn,
   RightBtn,
   SliderTitle,
-} from "../styles/slider";
+} from "../styles/components/slider";
 import { makeImagePath } from "../utils";
 
 const offset = 6;
 
-function Slider({ results, type }: IGetMoviesResult) {
+function Slider({ results, type }: IGetContents) {
   const navigate = useNavigate();
   const [index, setIndex] = useState(1);
   const [leaving, setLeaving] = useState(false);
   const tvMatch = useMatch(`/tv`);
 
-  const onMovieClicked = (movieId?: number) => {
+  const onContentClicked = (id?: number) => {
     if (tvMatch) {
       // navigate(`/tv/${movieId}`);
       return;
     }
-    navigate(`/movies/${type}/${movieId}`);
+    navigate(`/movies/${type}/${id}`);
   };
 
   const toggleLeaving = () => setLeaving((prev) => !prev);
@@ -42,8 +42,8 @@ function Slider({ results, type }: IGetMoviesResult) {
     setDirection(direction);
     if (results) {
       if (leaving) return;
-      const totalMovies = results.length - 1;
-      const maxIndex = Math.floor(totalMovies / offset) - 1;
+      const total = results.length - 1;
+      const maxIndex = Math.floor(total / offset) - 1;
       toggleLeaving();
       if (direction === "right") {
         setIndex((prev) => (prev === maxIndex ? 0 : prev + 1));
@@ -92,24 +92,24 @@ function Slider({ results, type }: IGetMoviesResult) {
             {results
               .slice(1)
               .slice(offset * index, offset * index + offset)
-              .map((movie, idx) => (
-                <Movie
+              .map((contents, idx) => (
+                <Cover
                   style={{
                     originX: idx === 0 ? 0 : idx === 5 ? 1 : undefined,
                   }}
-                  layoutId={movie.id + type}
-                  onClick={() => onMovieClicked(movie.id)}
+                  layoutId={contents.id + type}
+                  onClick={() => onContentClicked(contents.id)}
                   variants={boxVariants}
                   initial="normal"
                   whileHover="hover"
                   transition={{ type: "tween" }}
-                  key={movie.id}
-                  bgphoto={makeImagePath(movie.backdrop_path, "w500")}
+                  key={contents.id}
+                  bgphoto={makeImagePath(contents.backdrop_path, "w500")}
                 >
                   <Info variants={infoVariants}>
-                    <h4>{movie.title || movie.name}</h4>
+                    <h4>{contents.title || contents.name}</h4>
                   </Info>
-                </Movie>
+                </Cover>
               ))}
           </SliderPage>
         </AnimatePresence>

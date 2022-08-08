@@ -15,7 +15,7 @@ import {
   Logo,
   Nav,
   Search,
-} from "../styles/header";
+} from "../styles/components/header";
 import { logoVariants, navVariants } from "../animations/variants";
 import { useForm } from "react-hook-form";
 
@@ -84,7 +84,7 @@ function Header() {
             </Item>
             <Item>
               <Link to="/tv">
-                Tv Shows
+                Tv Show
                 {tvMatch && <Circle layoutId="circle" />}
               </Link>
             </Item>
@@ -114,7 +114,7 @@ function Header() {
             initial={{ scaleX: 0 }}
             transition={{ type: "linear" }}
             animate={inputAnimation}
-            placeholder="Search for movie or tv show..."
+            placeholder="Search for contents.."
           />
         </Search>
       </Col>

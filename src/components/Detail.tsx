@@ -6,8 +6,8 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { memo } from "react";
 import { useQuery } from "react-query";
-import { useMatch, useNavigate } from "react-router-dom";
-import { getMovieDetail, getTvShow, IGetMoviesResult, Movies } from "../api";
+import { useNavigate } from "react-router-dom";
+import { getMovieDetail, ContentsData } from "../api";
 
 import {
   BasicInfo,
@@ -15,46 +15,54 @@ import {
   Wrapper,
   PlayBtn,
   FavoritBtn,
-  MovieInfo,
-  MovieOverview,
+  Info,
+  Overview,
   Img,
   Genres,
   CancleBtn,
-} from "../styles/movieDetail";
+} from "../styles/components/detail";
 import { formatOverView, makeImagePath } from "../utils";
 
-interface IMovieDetailProps {
-  movieId: string;
+interface IContentDetailProps {
+  id: string;
 }
 
-function MovieDetail({ movieId }: IMovieDetailProps) {
+function Detail({ id }: IContentDetailProps) {
   const navigate = useNavigate();
   const onCancleBtnClick = () => navigate("/");
 
-  const { data: movie, isLoading: movieLoading } = useQuery<Movies>(
+  const { data: movie, isLoading: movieLoading } = useQuery<ContentsData>(
     ["movie", "detail"],
-    () => getMovieDetail(movieId)
+    () => getMovieDetail(id)
   );
+
+  const { data: tv, isLoading: tvLoading } = useQuery<ContentsData>(
+    ["tv", "detail"],
+    () => getMovieDetail(id)
+  );
+
+  const loading = movieLoading || tvLoading;
+  const data = movie || tv;
 
   return (
     <>
-      {movieLoading ? (
+      {loading ? (
         <span>loadng...</span>
       ) : (
         <>
-          {movie ? (
+          {data ? (
             <Wrapper>
               <CancleBtn onClick={onCancleBtnClick}>
                 <FontAwesomeIcon icon={faXmark} />
               </CancleBtn>
-              <Img src={makeImagePath(movie?.poster_path)} alt="" />
+              <Img src={makeImagePath(data?.poster_path)} alt="" />
               <BasicInfo>
-                <span>{movie.release_date.slice(0, 4)}</span>
-                <span>{movie.runtime + "min"}</span>
-                <span>{movie.vote_average.toFixed(1) + "rate"}</span>
+                <span>{data.release_date.slice(0, 4)}</span>
+                <span>{data.runtime + "min"}</span>
+                <span>{data.vote_average.toFixed(1) + "rate"}</span>
               </BasicInfo>
               <DetailButton>
-                <a target="_blank" href={movie.homepage}>
+                <a target="_blank" href={data.homepage}>
                   <PlayBtn>
                     <FontAwesomeIcon icon={faPlay} />
                     <span>Play</span>
@@ -69,14 +77,14 @@ function MovieDetail({ movieId }: IMovieDetailProps) {
                   <span>Save</span>
                 </FavoritBtn>
               </DetailButton>
-              <MovieInfo>
-                <MovieOverview>{formatOverView(movie.overview)}</MovieOverview>
+              <Info>
+                <Overview>{formatOverView(data.overview)}</Overview>
                 <Genres>
-                  {movie.genres.slice(0, 4).map((genre) => (
+                  {data.genres.slice(0, 4).map((genre) => (
                     <li key={genre.id}>{genre.name.toLowerCase()}</li>
                   ))}
                 </Genres>
-              </MovieInfo>
+              </Info>
             </Wrapper>
           ) : null}
         </>
@@ -85,4 +93,4 @@ function MovieDetail({ movieId }: IMovieDetailProps) {
   );
 }
 
-export default memo(MovieDetail);
+export default memo(Detail);

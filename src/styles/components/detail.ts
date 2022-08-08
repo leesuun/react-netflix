@@ -46,10 +46,10 @@ export const FavoritBtn = styled(Btn)`
   }
 `;
 
-export const MovieInfo = styled.div`
+export const Info = styled.div`
   margin-top: 10px;
 `;
-export const MovieOverview = styled.p``;
+export const Overview = styled.p``;
 
 export const Genres = styled.ul`
   display: flex;

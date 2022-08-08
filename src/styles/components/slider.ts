@@ -19,14 +19,13 @@ export const SliderTitle = styled.h3`
   margin-bottom: 7px;
 `;
 
-export const Movie = styled(motion.div)<{ bgphoto: string }>`
+export const Cover = styled(motion.div)<{ bgphoto: string }>`
   height: 150px;
   background-image: url(${(props) => props.bgphoto});
   background-position: center center;
   background-size: cover;
   font-size: 66px;
   border-radius: 10px;
-
   cursor: pointer;
 `;
 
