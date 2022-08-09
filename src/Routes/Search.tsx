@@ -50,16 +50,3 @@ function Search() {
 }
 
 export default Search;
-// {allDataArr.map((v) => {
-//   if (v.media_type === "movie") {
-//     return <div key={v.id}>{v.title}</div>;
-//   }
-// })}
-// <hr />
-// <hr />
-// <hr />
-// {allDataArr.map((v) => {
-//   if (v.media_type === "tv") {
-//     return <div key={v.id}>{v.name}</div>;
-//   }
-// })}

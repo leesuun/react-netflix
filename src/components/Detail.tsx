@@ -7,7 +7,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { memo, useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useMatch, useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
 import { getMovieDetail, ContentsData, getTvDetail } from "../api";
+import { favoriteAtom } from "../atom";
 
 import {
   BasicInfo,
@@ -28,17 +30,12 @@ interface IContentDetailProps {
 }
 
 function Detail({ id }: IContentDetailProps) {
+  const [contents, setContents] = useRecoilState(favoriteAtom);
   const navigate = useNavigate();
   const tvMatch = useMatch("/tv/*");
   const movieMatch = useMatch("/movies/*");
-
-  const onCancleBtnClick = () => {
-    if (tvMatch) {
-      navigate("/tv");
-      return;
-    }
-    navigate("/");
-  };
+  const nowLocation =
+    tvMatch?.pathnameBase.slice(1) || movieMatch?.pathnameBase.slice(1);
 
   const { data: movie, isLoading: movieLoading } = useQuery<ContentsData>(
     ["movie", "detail"],
@@ -54,9 +51,50 @@ function Detail({ id }: IContentDetailProps) {
     { enabled: tvMatch === null ? false : true }
   );
 
+  // console.log(movieMatch);
+
   const data = tvMatch ? tv : movie;
   const loading = movieLoading || tvLoading;
 
+  const onCancleBtnClick = () => {
+    if (tvMatch) {
+      navigate("/tv");
+      return;
+    }
+    navigate("/");
+  };
+
+  const onSaveFavorit = (location?: string) => {
+    setContents((prev) => {
+      const copyPrev = { ...prev };
+      const movie = [...copyPrev.movie];
+      const tv = [...copyPrev.tv];
+
+      switch (location) {
+        case "movies": {
+          const id = movie.map((v) => v.id);
+          if (!id.includes(data?.id)) {
+            // 중복 x
+            movie.push(data);
+          }
+          // 중복 이벤트처리 ㄱㄱ
+          break;
+        }
+        case "tv": {
+          const id = tv.map((v) => v.id);
+          if (!id.includes(data?.id)) {
+            tv.push(data);
+          }
+          break;
+        }
+        default:
+          break;
+      }
+
+      return { movie: [...movie], tv: [...tv] };
+    });
+  };
+  console.log(contents);
   return (
     <>
       {loading ? (
@@ -88,7 +126,7 @@ function Detail({ id }: IContentDetailProps) {
                   </PlayBtn>
                 </a>
 
-                <FavoritBtn>
+                <FavoritBtn onClick={() => onSaveFavorit(nowLocation)}>
                   <FontAwesomeIcon
                     style={{ color: "white" }}
                     icon={faCartArrowDown}
