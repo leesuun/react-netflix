@@ -5,6 +5,13 @@ export const SliderComponent = styled.div`
   position: relative;
   top: -100px;
   margin-bottom: 200px;
+
+  :hover {
+    button {
+      opacity: 1;
+      transition: opacity 0.5s ease-in-out;
+    }
+  }
 `;
 export const SliderPage = styled(motion.div)`
   display: grid;
@@ -39,6 +46,8 @@ export const SliderBtn = styled(motion.button)`
   color: white;
   z-index: 1;
   cursor: pointer;
+
+  opacity: 0;
 `;
 
 export const LeftBtn = styled(SliderBtn)`

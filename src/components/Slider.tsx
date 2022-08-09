@@ -4,7 +4,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AnimatePresence } from "framer-motion";
-import { memo, useState } from "react";
+import { memo, useRef, useState } from "react";
 import { useMatch, useNavigate } from "react-router-dom";
 import { boxVariants, infoVariants, rowVariants } from "../animations/variants";
 import { IGetContents } from "../api";
