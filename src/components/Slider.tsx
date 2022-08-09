@@ -29,9 +29,11 @@ function Slider({ results, type }: IGetContents) {
 
   const onContentClicked = (id?: number) => {
     if (tvMatch) {
-      // navigate(`/tv/${movieId}`);
+      navigate(`/tv/${type}/${id}`);
+      console.log("tv");
       return;
     }
+    console.log("movie");
     navigate(`/movies/${type}/${id}`);
   };
 

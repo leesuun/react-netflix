@@ -4,10 +4,10 @@ import {
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { memo } from "react";
+import { memo, useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { useNavigate } from "react-router-dom";
-import { getMovieDetail, ContentsData } from "../api";
+import { useMatch, useNavigate } from "react-router-dom";
+import { getMovieDetail, ContentsData, getTvDetail } from "../api";
 
 import {
   BasicInfo,
@@ -29,20 +29,33 @@ interface IContentDetailProps {
 
 function Detail({ id }: IContentDetailProps) {
   const navigate = useNavigate();
-  const onCancleBtnClick = () => navigate("/");
+  const tvMatch = useMatch("/tv/*");
+  const movieMatch = useMatch("/movies/*");
+
+  const onCancleBtnClick = () => {
+    if (tvMatch) {
+      navigate("/tv");
+      return;
+    }
+    navigate("/");
+  };
 
   const { data: movie, isLoading: movieLoading } = useQuery<ContentsData>(
     ["movie", "detail"],
-    () => getMovieDetail(id)
+    () => getMovieDetail(id),
+    {
+      enabled: movieMatch === null ? false : true,
+    }
   );
 
   const { data: tv, isLoading: tvLoading } = useQuery<ContentsData>(
     ["tv", "detail"],
-    () => getMovieDetail(id)
+    () => getTvDetail(id),
+    { enabled: tvMatch === null ? false : true }
   );
 
+  const data = tvMatch ? tv : movie;
   const loading = movieLoading || tvLoading;
-  const data = movie || tv;
 
   return (
     <>
@@ -57,8 +70,14 @@ function Detail({ id }: IContentDetailProps) {
               </CancleBtn>
               <Img src={makeImagePath(data?.poster_path)} alt="" />
               <BasicInfo>
-                <span>{data.release_date.slice(0, 4)}</span>
-                <span>{data.runtime + "min"}</span>
+                <span>
+                  {data.release_date
+                    ? data.release_date.slice(0, 4)
+                    : data.first_air_date.slice(0, 4) +
+                      "~" +
+                      data.last_air_date.slice(0, 4)}
+                </span>
+                <span>{data.runtime ? data.runtime + "min" : null}</span>
                 <span>{data.vote_average.toFixed(1) + "rate"}</span>
               </BasicInfo>
               <DetailButton>

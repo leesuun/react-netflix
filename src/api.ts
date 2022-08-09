@@ -27,6 +27,8 @@ export interface ContentsData {
   homepage: string;
   media_type: string;
   name: string;
+  first_air_date: string;
+  last_air_date: string;
 }
 
 export interface IGetContents {
@@ -62,6 +64,23 @@ export function getTopRatingMovie() {
 export function getMovieDetail(movieId: string) {
   return fetch(`${BASE_URL}/movie/${movieId}?api_key=${API_KEY}`).then(
     (response) => response.json()
+  );
+}
+
+export function getPopularTvShow() {
+  return fetch(`${BASE_URL}/tv/popular?api_key=${API_KEY}`).then((response) =>
+    response.json()
+  );
+}
+export function getTopRateTvShow() {
+  return fetch(`${BASE_URL}/tv/top_rated?api_key=${API_KEY}`).then((response) =>
+    response.json()
+  );
+}
+
+export function getTvDetail(tvId: string) {
+  return fetch(`${BASE_URL}/tv/${tvId}?api_key=${API_KEY}`).then((response) =>
+    response.json()
   );
 }
 
