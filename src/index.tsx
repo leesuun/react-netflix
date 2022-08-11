@@ -87,7 +87,7 @@ a {
 `;
 
 root.render(
-  <React.StrictMode>
+  <>
     <QueryClientProvider client={queryClient}>
       <RecoilRoot>
         <ThemeProvider theme={theme}>
@@ -96,5 +96,5 @@ root.render(
         </ThemeProvider>
       </RecoilRoot>
     </QueryClientProvider>
-  </React.StrictMode>
+  </>
 );

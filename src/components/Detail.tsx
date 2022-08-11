@@ -66,25 +66,27 @@ function Detail({ id }: IContentDetailProps) {
 
   const onSaveFavorit = (location?: string) => {
     setContents((prev) => {
+      if (!data) return prev;
       const copyPrev = { ...prev };
       const movie = [...copyPrev.movie];
       const tv = [...copyPrev.tv];
 
+      const addFavorite = (contents: ContentsData[]) => {
+        const id = contents.map((v) => v.id);
+        if (!id.includes(data?.id)) {
+          contents.push(data);
+          alert("즐겨찾기에 추가되었습니다.");
+        } else {
+          alert("이미 추가된 컨텐츠입니다.");
+        }
+      };
       switch (location) {
         case "movies": {
-          const id = movie.map((v) => v.id);
-          if (!id.includes(data?.id)) {
-            // 중복 x
-            movie.push(data);
-          }
-          // 중복 이벤트처리 ㄱㄱ
+          addFavorite(movie);
           break;
         }
         case "tv": {
-          const id = tv.map((v) => v.id);
-          if (!id.includes(data?.id)) {
-            tv.push(data);
-          }
+          addFavorite(tv);
           break;
         }
         default:
@@ -94,7 +96,7 @@ function Detail({ id }: IContentDetailProps) {
       return { movie: [...movie], tv: [...tv] };
     });
   };
-  console.log(contents);
+  // console.log(contents);
   return (
     <>
       {loading ? (
