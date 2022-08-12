@@ -1,4 +1,4 @@
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { favoriteAtom } from "../atom";
 import {
@@ -29,12 +29,22 @@ const Box = styled.div`
 `;
 
 function Favorite() {
-  const data = useRecoilValue(favoriteAtom);
+  const [data, setData] = useRecoilState(favoriteAtom);
   // console.log(data);
 
   const onDragEnd = ({ source, destination, draggableId }: DropResult) => {
-    console.log(source, destination);
-    console.log(draggableId);
+    if (draggableId == "movie" || "tv") {
+      setData((prev) => {
+        if (!destination) return prev;
+        const dataToAry = Object.entries(prev);
+        const copy = dataToAry.splice(source.index, 1);
+        dataToAry.splice(destination.index, 0, ...copy);
+        const newData = Object.fromEntries(dataToAry);
+        return { ...newData };
+      });
+    }
+    if (draggableId == "tv or movie") {
+    }
   };
   return (
     <>
