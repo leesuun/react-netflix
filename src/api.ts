@@ -1,7 +1,7 @@
 const API_KEY = "9e885e4ff5433ef541fa62970547ea33";
 const BASE_URL = "https://api.themoviedb.org/3";
 
-interface genres {
+export interface genres {
   id: number;
   name: string;
 }

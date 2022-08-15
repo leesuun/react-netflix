@@ -1,4 +1,4 @@
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import { favoriteAtom } from "../atom";
 import {
@@ -7,25 +7,42 @@ import {
   Draggable,
   DropResult,
 } from "react-beautiful-dnd";
+import { makeImagePath } from "../utils";
+import { Cover } from "../styles/components/slider";
+import Item from "../components/favorite/Item";
 
 const Wrapper = styled.div`
+  display: flex;
+  justify-content: center;
   margin-top: 200px;
-  /* height: 100vh; */
 `;
 
 const ContentsType = styled.ul`
   display: grid;
-  justify-content: center;
+  /* place-items: center; */
+  /* justify-content: center; */
+
   grid-gap: 30px;
-  grid-template-columns: repeat(2, 400px);
+  grid-template-columns: repeat(2, 1fr);
+
   width: 100%;
-  border: 5px solid red;
 `;
 
-const Box = styled.div`
-  width: 400px;
-  height: 200px;
-  border: 3px solid blue;
+const Contents = styled.div`
+  border: 1px solid white;
+  border-radius: 10px;
+  padding: 10px;
+  min-width: 370px;
+`;
+
+const Header = styled.header`
+  margin-bottom: 15px;
+`;
+
+const Title = styled.h3`
+  text-align: center;
+  font-size: 30px;
+  padding: 5px;
 `;
 
 function Favorite() {
@@ -33,29 +50,68 @@ function Favorite() {
   // console.log(data);
 
   const onDragEnd = ({ source, destination, draggableId }: DropResult) => {
-    if (draggableId == "movie" || "tv") {
+    // console.log(source, destination);
+
+    if (draggableId === "movie" || draggableId === "tv") {
       setData((prev) => {
         if (!destination) return prev;
         const dataToAry = Object.entries(prev);
-        const copy = dataToAry.splice(source.index, 1);
-        dataToAry.splice(destination.index, 0, ...copy);
+        const saveSource = dataToAry.splice(source.index, 1);
+        dataToAry.splice(destination.index, 0, ...saveSource);
         const newData = Object.fromEntries(dataToAry);
         return { ...newData };
       });
     }
-    if (draggableId == "tv or movie") {
+
+    if (!isNaN(Number(draggableId))) {
+      if (data.movie.filter((v) => v.id === Number(draggableId))[0]) {
+        setData((prev) => {
+          if (!destination) return prev;
+          const copyPrev = [...prev.movie];
+          const cut = copyPrev.splice(source.index, 1);
+          copyPrev.splice(destination.index, 0, ...cut);
+          const obj = {
+            movie: copyPrev,
+            tv: prev.tv,
+          };
+
+          return { ...obj };
+        });
+      }
+      if (data.tv.filter((v) => v.id === Number(draggableId))[0]) {
+        setData((prev) => {
+          if (!destination) return prev;
+          const copyPrev = [...prev.tv];
+          const cut = copyPrev.splice(source.index, 1);
+          copyPrev.splice(destination.index, 0, ...cut);
+          const obj = {
+            movie: prev.movie,
+            tv: copyPrev,
+          };
+
+          return { ...obj };
+        });
+      }
     }
   };
   return (
     <>
       <Wrapper>
         <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable direction="horizontal" droppableId="contentsType">
+          <Droppable
+            direction="horizontal"
+            type="type"
+            droppableId="contentsType"
+          >
             {(provided, snapshot) => (
               <div ref={provided.innerRef}>
                 <ContentsType>
-                  {Object.entries(data).map((v, idx) => (
-                    <Draggable key={v[0]} index={idx} draggableId={v[0]}>
+                  {Object.entries(data).map((items, idx) => (
+                    <Draggable
+                      key={items[0]}
+                      index={idx}
+                      draggableId={items[0]}
+                    >
                       {(provided, snapshot) => (
                         <div
                           ref={provided.innerRef}
@@ -63,7 +119,36 @@ function Favorite() {
                           {...provided.draggableProps}
                           key={idx}
                         >
-                          <Box>{v[0]}</Box>
+                          <Contents>
+                            <Header>
+                              <Title>
+                                {items[0].charAt(0).toUpperCase() +
+                                  items[0].slice(1)}
+                              </Title>
+                            </Header>
+                            <Droppable
+                              type={items[0]}
+                              direction="vertical"
+                              droppableId={"contents " + items[0]}
+                            >
+                              {(provided, snapshot) => (
+                                <div ref={provided.innerRef}>
+                                  {items[1].map((item, index) => (
+                                    <Item
+                                      backdrop_path={item.backdrop_path}
+                                      genres={item.genres}
+                                      id={item.id}
+                                      name={item.name}
+                                      title={item.title}
+                                      key={item.id}
+                                      index={index}
+                                    ></Item>
+                                  ))}
+                                  {provided.placeholder}
+                                </div>
+                              )}
+                            </Droppable>
+                          </Contents>
                         </div>
                       )}
                     </Draggable>
@@ -79,44 +164,3 @@ function Favorite() {
   );
 }
 export default Favorite;
-
-// <Droppable droppableId="1">
-//               {(provided, snapshot) => (
-//                 <div ref={provided.innerRef}>
-//                   {arr.map((v, idx) => (
-//                     <Draggable index={idx} key={idx} draggableId={idx + ""}>
-//                       {(provided, snapshot) => (
-//                         <div>
-//                           <Box
-//                             ref={provided.innerRef}
-//                             {...provided.dragHandleProps}
-//                             {...provided.draggableProps}
-//                           ></Box>
-//                         </div>
-//                       )}
-//                     </Draggable>
-//                   ))}
-//                   {provided.placeholder}
-//                 </div>
-//               )}
-//             </Droppable>
-//             <Droppable droppableId="2">
-//               {(provided, snapshot) => (
-//                 <div ref={provided.innerRef}>
-//                   {arr.map((v, idx) => (
-//                     <Draggable index={idx} key={idx} draggableId={idx + ""}>
-//                       {(provided, snapshot) => (
-//                         <div>
-//                           <Box
-//                             ref={provided.innerRef}
-//                             {...provided.dragHandleProps}
-//                             {...provided.draggableProps}
-//                           ></Box>
-//                         </div>
-//                       )}
-//                     </Draggable>
-//                   ))}
-//                   {provided.placeholder}
-//                 </div>
-//               )}
-//             </Droppable>
